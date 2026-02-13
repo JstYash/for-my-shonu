@@ -77,3 +77,149 @@
             min-height: 40px;
             text-align: center;
             padding: 0 20px;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        /* Success Screen */
+        .success-content {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffe6e6;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            animation: fadeIn 1s;
+            text-align: center;
+        }
+        
+        .success-content h1 {
+            font-size: 3rem;
+        }
+
+        .heart {
+            font-size: 6rem;
+            animation: heartbeat 1.5s infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="question-screen">
+        <h1 id="main-question">Will you be my Valentine?</h1>
+        
+        <div class="buttons">
+            <button id="yes-btn" onclick="acceptProposal()">Yes</button>
+            <button id="no-btn" onmouseover="moveButton()" onclick="moveButton()">No</button>
+        </div>
+        
+        <div id="message-box"></div>
+    </div>
+
+    <div class="success-content" id="success-screen">
+        <div class="heart">❤️</div>
+        <h1>Yess, I love you the most. <br> You're my forever valentine!</h1>
+    </div>
+
+    <script>
+        let yesSize = 20;      // Initial font size for Yes button
+        let messageSize = 20;  // Initial font size for the message
+        let clickCount = 0;    // Tracks how many times she tried to click No
+
+        const yesBtn = document.getElementById('yes-btn');
+        const noBtn = document.getElementById('no-btn');
+        const messageBox = document.getElementById('message-box');
+        const questionText = document.getElementById('main-question');
+
+        const messages = [
+            "Are you sure?",
+            "Think again!",
+            "Don't be like that!",
+            "That button is shy...",
+            "Do you want to try the other button?",
+            "You're breaking my heart 💔",
+            "Pretty please?",
+            "I'll give you chocolate!",
+            "Look how big the YES is getting!",
+            "Just click Yes already! 😄"
+        ];
+
+        function moveButton() {
+            clickCount++;
+
+            // 1. Make the Yes button physically bigger (pushes other elements away)
+            yesSize += 10; // Increases font size by 10px each time
+            yesBtn.style.fontSize = `${yesSize}px`;
+
+            // 2. Make the message text bigger too (but slightly slower)
+            if (messageSize < 50) { // Cap the message size so it doesn't get unreadable
+                messageSize += 2;
+                messageBox.style.fontSize = `${messageSize}px`;
+            }
+
+            // 3. Move the No button (using the fixed logic we perfected)
+            const buffer = 50;
+            const maxWidth = window.innerWidth - noBtn.offsetWidth - buffer;
+            const maxHeight = window.innerHeight - noBtn.offsetHeight - buffer;
+
+            // Generate random position within safe bounds
+            const randomX = Math.max(10, Math.random() * maxWidth);
+            const randomY = Math.max(10, Math.random() * maxHeight);
+            
+            noBtn.style.position = 'fixed'; // Keeps it floating above everything
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+            noBtn.style.zIndex = "100"; // Ensures No button is always clickable
+
+            // 4. Update the message
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            messageBox.innerText = randomMessage;
+        }
+
+        function acceptProposal() {
+            document.getElementById('question-screen').style.display = 'none';
+            document.getElementById('success-screen').style.display = 'flex';
+            launchConfetti();
+        }
+
+        function launchConfetti() {
+            const duration = 5 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                const particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+    </script>
+</body>
+</html>
