@@ -18,12 +18,12 @@
 
         .container {
             display: flex;
-            flex-direction: column; /* Stacks items vertically */
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100%;
             width: 100%;
-            gap: 20px; /* Adds space between elements */
+            gap: 20px;
             position: relative;
             z-index: 1;
         }
@@ -34,7 +34,7 @@
             text-align: center;
             margin: 0;
             transition: all 0.3s ease;
-            z-index: 10; /* Ensures text stays on top just in case */
+            z-index: 10;
         }
 
         .buttons {
@@ -42,7 +42,6 @@
             gap: 20px;
             align-items: center;
             justify-content: center;
-            /* Allow the container to grow so it pushes content */
             transition: all 0.3s ease; 
         }
 
@@ -53,13 +52,13 @@
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s ease;
-            white-space: nowrap; /* Keeps button text on one line */
+            white-space: nowrap;
         }
 
         #yes-btn {
             background-color: #4caf50;
             color: white;
-            font-size: 20px; /* Starting size */
+            font-size: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
@@ -73,15 +72,15 @@
         #message-box {
             color: #d32f2f;
             font-style: italic;
-            font-size: 20px; /* Starting size */
+            font-size: 20px;
             min-height: 40px;
             text-align: center;
             padding: 0 20px;
             transition: all 0.3s ease;
             z-index: 10;
+            max-width: 80%;
         }
 
-        /* Success Screen */
         .success-content {
             display: none;
             position: fixed;
@@ -139,16 +138,15 @@
     </div>
 
     <script>
-        let yesSize = 20;      // Initial font size for Yes button
-        let messageSize = 20;  // Initial font size for the message
-        let clickCount = 0;    // Tracks how many times she tried to click No
-
+        let yesSize = 20;
+        let messageSize = 20;
+        
         const yesBtn = document.getElementById('yes-btn');
         const noBtn = document.getElementById('no-btn');
         const messageBox = document.getElementById('message-box');
-        const questionText = document.getElementById('main-question');
-
-        const messages = [
+        
+        // Huge list of pre-generated messages
+        const allMessages = [
             "Are you sure?",
             "Think again!",
             "Don't be like that!",
@@ -158,39 +156,85 @@
             "Pretty please?",
             "I'll give you chocolate!",
             "Look how big the YES is getting!",
-            "Just click Yes already! 😄"
+            "Just click Yes already! 😄",
+            "Error 404: 'No' not found.",
+            "But we look so good together!",
+            "I'll do the dishes for a week!",
+            "I'll let you pick the movie!",
+            "Are you really, really sure?",
+            "Is that your final answer?",
+            "You might regret this...",
+            "Don't make me cry!",
+            "I baked you virtual cookies 🍪",
+            "Even the button is running away!",
+            "What if I say pretty please with a cherry on top?",
+            "My mom likes you!",
+            "I promise I don't snore (much)",
+            "I'm not accepting no for an answer 😜",
+            "Clicking 'No' just makes me love you more",
+            "Play hard to get, I see...",
+            "This button is slippery, huh?",
+            "Okay, now you're just teasing me.",
+            "I'll buy you that thing you wanted!",
+            "Have a heart! ❤️",
+            "The 'Yes' button is getting lonely.",
+            "I'm stubborn, I can do this all day.",
+            "You're testing my patience... and I love it.",
+            "Imagine our life together...",
+            "Think of the puppies!",
+            "I'll give you a foot massage!",
+            "Last chance to click Yes (just kidding, infinite chances)",
+            "You're the peanut butter to my jelly!",
+            "Don't leave me hanging!",
+            "I'll write you a song!",
+            "I'm running out of lines here...",
+            "Seriously though, be my Valentine?",
+            "I'll stop asking... in 100 years.",
+            "You're my favorite person!",
+            "Let's make it official!",
+            "The universe wants you to click Yes."
         ];
 
-        function moveButton() {
-            clickCount++;
+        // Create a copy we can modify
+        let availableMessages = [...allMessages];
 
-            // 1. Make the Yes button physically bigger (pushes other elements away)
-            yesSize += 10; // Increases font size by 10px each time
+        function moveButton() {
+            // 1. Increase Sizes
+            yesSize += 10;
             yesBtn.style.fontSize = `${yesSize}px`;
 
-            // 2. Make the message text bigger too (but slightly slower)
-            if (messageSize < 50) { // Cap the message size so it doesn't get unreadable
-                messageSize += 2;
+            if (messageSize < 40) {
+                messageSize += 1;
                 messageBox.style.fontSize = `${messageSize}px`;
             }
 
-            // 3. Move the No button (using the fixed logic we perfected)
+            // 2. Move No Button (Fixed & Bounded)
             const buffer = 50;
             const maxWidth = window.innerWidth - noBtn.offsetWidth - buffer;
             const maxHeight = window.innerHeight - noBtn.offsetHeight - buffer;
 
-            // Generate random position within safe bounds
             const randomX = Math.max(10, Math.random() * maxWidth);
             const randomY = Math.max(10, Math.random() * maxHeight);
             
-            noBtn.style.position = 'fixed'; // Keeps it floating above everything
+            noBtn.style.position = 'fixed';
             noBtn.style.left = `${randomX}px`;
             noBtn.style.top = `${randomY}px`;
-            noBtn.style.zIndex = "100"; // Ensures No button is always clickable
+            noBtn.style.zIndex = "100";
 
-            // 4. Update the message
-            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-            messageBox.innerText = randomMessage;
+            // 3. Smart Message Selection (No Repeats)
+            if (availableMessages.length === 0) {
+                // If we used them all, reset the list!
+                availableMessages = [...allMessages];
+            }
+            
+            // Pick a random index from the available list
+            const randomIndex = Math.floor(Math.random() * availableMessages.length);
+            const message = availableMessages[randomIndex];
+            
+            // Remove it so it doesn't show again until we reset
+            availableMessages.splice(randomIndex, 1);
+            
+            messageBox.innerText = message;
         }
 
         function acceptProposal() {
