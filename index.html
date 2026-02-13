@@ -142,19 +142,25 @@
             yesBtn.style.transform = `scale(${yesScale})`;
 
             // 2. Move the No button
-            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+            // We subtract the button size AND a 50px buffer so it doesn't touch the edge
+            const maxWidth = window.innerWidth - noBtn.offsetWidth - 50;
+            const maxHeight = window.innerHeight - noBtn.offsetHeight - 50;
+
+            // Generate random positions, ensuring they aren't negative
+            // We use 'Math.max(10, ...)' to keep a small 10px buffer on the top/left too
+            const randomX = Math.max(10, Math.random() * maxWidth);
+            const randomY = Math.max(10, Math.random() * maxHeight);
             
-            // Apply absolute positioning so it can jump anywhere on screen
-            noBtn.style.position = 'absolute';
-            noBtn.style.left = `${x}px`;
-            noBtn.style.top = `${y}px`;
+            // Use 'fixed' so it stays in the window even if the page scrolls
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
 
             // 3. Show a random quirky message
             const randomMessage = messages[Math.floor(Math.random() * messages.length)];
             messageBox.innerText = randomMessage;
         }
-
+        
         function acceptProposal() {
             // Hide the question
             document.getElementById('question-screen').style.display = 'none';
