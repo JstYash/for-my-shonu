@@ -141,22 +141,27 @@
             yesScale += 0.2;
             yesBtn.style.transform = `scale(${yesScale})`;
 
-            // 2. Move the No button
-            // We subtract the button size AND a 50px buffer so it doesn't touch the edge
-            const maxWidth = window.innerWidth - noBtn.offsetWidth - 50;
-            const maxHeight = window.innerHeight - noBtn.offsetHeight - 50;
+            // 2. Calculate the exact boundaries of the VISIBLE window
+            // We subtract the button's own width/height so it doesn't clip off the right/bottom
+            // We also subtract a 20px "buffer" so it doesn't touch the very edge
+            const buffer = 20;
+            const maxX = window.innerWidth - noBtn.offsetWidth - buffer;
+            const maxY = window.innerHeight - noBtn.offsetHeight - buffer;
 
-            // Generate random positions, ensuring they aren't negative
-            // We use 'Math.max(10, ...)' to keep a small 10px buffer on the top/left too
-            const randomX = Math.max(10, Math.random() * maxWidth);
-            const randomY = Math.max(10, Math.random() * maxHeight);
+            // 3. Generate a completely random position within those safe bounds
+            // Math.random() * maxX gives us a number between 0 and the right safe edge
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+
+            // 4. Apply the new position
+            // 'fixed' ensures it stays in view even if the page scrolls
+            noBtn.style.position = 'fixed'; 
             
-            // Use 'fixed' so it stays in the window even if the page scrolls
-            noBtn.style.position = 'fixed';
-            noBtn.style.left = randomX + 'px';
-            noBtn.style.top = randomY + 'px';
+            // We use specific coordinates (left/top) to teleport it
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
 
-            // 3. Show a random quirky message
+            // 5. Change the text to a random message
             const randomMessage = messages[Math.floor(Math.random() * messages.length)];
             messageBox.innerText = randomMessage;
         }
