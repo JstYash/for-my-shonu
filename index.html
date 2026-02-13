@@ -62,6 +62,8 @@
             color: white;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             position: relative; /* Allows us to move it easily */
+            z-index: 100; /* Ensures the button floats ON TOP of everything */
+            transition: top 0.3s ease, left 0.3s ease;
         }
 
         #message-box {
